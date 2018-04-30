@@ -7,7 +7,7 @@
 #include <Bridge.h>
 #include <BridgeServer.h>
 #include <BridgeClient.h>
-
+  
 BridgeServer server;
 
  
@@ -28,17 +28,8 @@ void setup() {
   server.begin();
 }
 
-void loop(){
-  BridgeClient client = server.accept();
 
-    if (client) {
-    process(client);
-
-    client.stop();
-
-     delay(50); // Poll every 50ms
-}
-  }
+ 
 
   void process(BridgeClient client) {
   // read the command
@@ -103,7 +94,8 @@ void analogCommand(BridgeClient client) {
     String key = "D";
     key += pin;
     Bridge.put(key, String(value));
-  } else {
+  } 
+  else {
     // Read analog pin
     value = analogRead(pin);
 
@@ -155,10 +147,30 @@ void modeCommand(BridgeClient client) {
   client.print(F("error: invalid mode "));
   client.print(mode);
 }
+void playTone(long duration, int freq) {
+    duration *= 1000;
+    int period = (1.0 / freq) * 1000000;
+    long elapsed_time = 0;
+    while (elapsed_time < duration) {
+        digitalWrite(pinSpeaker,HIGH);
+        delayMicroseconds(period / 2);
+        digitalWrite(pinSpeaker, LOW);
+        delayMicroseconds(period / 2);
+        elapsed_time += (period);
+    }
+}
+    
+void loop() {
+  BridgeClient client = server.accept();
 
- //sensor 
+    if (client) {
+    process(client);
 
-  pirState = digitalRead(inputPin);  // read input value
+    client.stop();
+    }
+    //sensor 
+  if (ledPin = HIGH){
+  val = digitalRead(inputPin);  // read input value
   if (val == HIGH) {            // check if the input is HIGH
     playTone(300, 160);
     delay(150);
@@ -181,16 +193,5 @@ void modeCommand(BridgeClient client) {
     }
   }
 }
-// duration in mSecs, frequency in hertz
-void playTone(long duration, int freq) {
-    duration *= 1000;
-    int period = (1.0 / freq) * 1000000;
-    long elapsed_time = 0;
-    while (elapsed_time < duration) {
-        digitalWrite(pinSpeaker,HIGH);
-        delayMicroseconds(period / 2);
-        digitalWrite(pinSpeaker, LOW);
-        delayMicroseconds(period / 2);
-        elapsed_time += (period);
-    }
 }
+
